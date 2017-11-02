@@ -68,9 +68,56 @@ public:
     }
 };
 
+/*
+ 
+ 8.2 given an empty plot of size 2xN, we want to place tiles such that
+ the entire plot is covered.  Each tile is of size 2x1 and can be placed
+ either horizontally or vertically.  If N is 5, then one way to cover the plot
+ is shown below:
+ 
+ Before: ( X is an empty cell )
+ XXXXX
+ XXXXX
+ 
+ After: ( 5 tiles: A, B, C, D, and E )
+ ABBDE
+ ACCDE
+ 
+ Write a function which accepts N as input and return the total number of ways
+ in which we can place tiles (without breaking any tile).
+ 
+ */
+class Solution3 {
+public:
+    int tilePlacements(int n){
+        vector<int> memo(n+1,0);
+        return helper(n,memo);
+    }
+private:
+    int helper(int n, vector<int>& memo){
+        if (memo[n]) return memo[n];
+        if (n<=3) return memo[n]=n;
+        return memo[n]=helper(n-1,memo)+helper(n-2,memo);
+    }
+};
+
+/*
+ 
+ If size of the plot in 8.2 above is changed to 3*n, then what changes
+ do we need to make in the solution?  Below diagram shows one of the possible
+ arrangements on a plot of size 3*n where n=12.
+ 
+ */
+
+//
+// TODO
+//
+
+
 
 int main(int argc, const char * argv[]) {
     
+    /*
     vector<vector<int>> v {
         { 1,3,5,8 },
         { 4,2,1,7 },
@@ -82,6 +129,12 @@ int main(int argc, const char * argv[]) {
     
     Solution2 solution2;
     cout << solution2.minCost(v) << endl;
+     */
+    
+    Solution3 solution3;
+    cout << solution3.tilePlacements(6) << endl;
+    
+
     
     return 0;
 }
