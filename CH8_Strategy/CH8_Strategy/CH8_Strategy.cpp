@@ -114,6 +114,66 @@ private:
 //
 
 
+/*
+ 
+ 8.3 consider a game where a player can score 3, 5, or 10 points in one move.
+ Given a total score N, find the total number of unique ways to reach a score of N.
+ 
+ For example: If N=13, output should be 5 because there are 5 ways to reach
+ a score of 13 as shown below:
+ 
+ (3,5,5), (5,3,5), (5,5,3), (3,10), (10,3)
+ 
+ */
+
+/* recursion + memo */
+class Solution4 {
+public:
+    int uniqueScores(int n, const vector<int>& points){
+        vector<int> memo(n+1,_INIT);
+        return helper(n,points,memo);
+    }
+    int count;
+private:
+    const int _INIT=-1;
+    int helper(int n, const vector<int>& points, vector<int>& memo){
+        if (n<0) return 0;
+        if (n==0) return 1;
+        if (memo[n]!=_INIT) return memo[n];
+        int cnt=0;
+        for (int i=0; i<points.size(); ++i){
+            cnt+=helper(n-points[i], points, memo);
+        }
+        return memo[n]=cnt;
+    }
+};
+
+/* dp */
+class Solution5 {
+public:
+    int uniqueScores(int n, const vector<int>& points){
+        vector<int> dp(n+1,0);
+        dp[0]=1;
+        for (int i=0; i<=n; ++i){
+            for (int j=0; j<points.size(); ++j){
+                int point=points[j];
+                if (n-point>=0) dp[i]+=dp[i-point];
+            }
+        }
+        return dp[n];
+    }
+};
+
+/*
+ 
+ What is the total number of ways to reach a particular score
+ if (10,3) and (3,10) are considered the same.  Modify your function accordingly.
+ 
+ */
+
+//
+// TODO
+//
 
 int main(int argc, const char * argv[]) {
     
@@ -131,10 +191,18 @@ int main(int argc, const char * argv[]) {
     cout << solution2.minCost(v) << endl;
      */
     
+    /*
     Solution3 solution3;
     cout << solution3.tilePlacements(6) << endl;
-    
+    */
 
+    vector<int> points { 3,5,10 };
+    Solution4 solution4;
+    cout << solution4.uniqueScores(13, points) << endl;
+    
+    Solution5 solution5;
+    cout << solution5.uniqueScores(13, points) << endl;
+    
     
     return 0;
 }
