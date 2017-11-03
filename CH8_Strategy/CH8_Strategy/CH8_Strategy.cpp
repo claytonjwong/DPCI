@@ -175,6 +175,27 @@ public:
 // TODO
 //
 
+
+/*
+ 
+ 8.4 given a array of integers, write a function that returns the maximum sum of subarray
+ such that the elements are contiguous
+ 
+ */
+class Solution6 {
+public:
+    int maxSum(vector<int>& nums){
+        if (nums.empty()) return 0;
+        int maxOverall=0, maxEndingHere=0;
+        for (int i=0; i<nums.size(); ++i){
+            maxEndingHere+=nums[i];
+            if (maxEndingHere < 0) maxEndingHere=0;
+            maxOverall=max(maxOverall,maxEndingHere);
+        }
+        return maxOverall;
+    }
+};
+
 int main(int argc, const char * argv[]) {
     
     /*
@@ -196,12 +217,18 @@ int main(int argc, const char * argv[]) {
     cout << solution3.tilePlacements(6) << endl;
     */
 
+    /*
     vector<int> points { 3,5,10 };
     Solution4 solution4;
     cout << solution4.uniqueScores(13, points) << endl;
     
     Solution5 solution5;
     cout << solution5.uniqueScores(13, points) << endl;
+    */
+    
+    vector<int> nums = { -2, -3, 4, -1, -2, 1, 5, -3 };
+    Solution6 solution6;
+    cout << solution6.maxSum(nums) << endl;
     
     
     return 0;
