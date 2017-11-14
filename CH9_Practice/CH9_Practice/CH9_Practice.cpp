@@ -111,10 +111,7 @@ public:
         }
     private:
         int helper(int m, int n){
-            if (m==0 && n==0) return 0;
             if (m==0 || n==0) return 1;
-            if (m==0) return helper(0,n-1);
-            if (n==0) return helper(m-1,0);
             return helper(m-1,n) + helper(m, n-1);
         }
     };
@@ -123,12 +120,10 @@ public:
     class SolutionDP {
     public:
         int pathCount(int m, int n){
-            if (m==0 && n==0) return 0;
+            if (m==0 && n==0) return 1;
             vector<vector<int>> dp(m,vector<int>(n,0));
-            for (int i=1; i<m; ++i)
-                dp[i][0]=1;
-            for (int j=1; j<n; ++j)
-                dp[0][j]=1;
+            for (int i=1; i<m; ++i) dp[i][0]=1;
+            for (int j=1; j<n; ++j) dp[0][j]=1;
             for (int i=1; i<m; ++i)
                 for (int j=1; j<n; ++j)
                     dp[i][j]=dp[i-1][j]+dp[i][j-1];
@@ -137,6 +132,51 @@ public:
     };
 };
 
+/*
+ 
+ 9.3 what if in 9.2, you are allowed to move in diagonal direction also?  How will your logic change
+ for recursive and dynamic solutions?
+ 
+ */
+class TotalPathCountWithDiagonals {
+public:
+    
+    /* recursive solution O(n^2) */
+    class SolutionREC {
+    public:
+        int pathCount(int m, int n){
+            return helper(m-1,n-1);
+            
+        }
+    private:
+        int helper(int m, int n){
+            if (m==0 || n==0) return 1;
+            return
+                  helper(m-1,n)     // above
+                + helper(m, n-1)    // left
+                + helper(m-1,n-1);  // diagonal
+        }
+    };
+    
+    /* DP solution O(n^2) */
+    class SolutionDP {
+    public:
+        int pathCount(int m, int n){
+            if (m==0 && n==0) return 1;
+            vector<vector<int>> dp(m,vector<int>(n,0));
+            dp[0][0]=1;
+            for (int i=1; i<m; ++i) dp[i][0]=1;
+            for (int j=1; j<n; ++j) dp[0][j]=1;
+            for (int i=1; i<m; ++i)
+                for (int j=1; j<n; ++j)
+                    dp[i][j]=
+                         dp[i-1][j]     // above
+                        +dp[i][j-1]     // left
+                        +dp[i-1][j-1];  // diagonal
+            return dp[m-1][n-1];
+        }
+    };
+};
 
 
 int main(int argc, const char * argv[]) {
@@ -159,6 +199,9 @@ int main(int argc, const char * argv[]) {
     /* 9.2 Total Path Count */
     TotalPathCount::SolutionREC solutionREC;
     TotalPathCount::SolutionDP solutionDP;
+    
+    TotalPathCountWithDiagonals::SolutionREC diagSolutionREC;
+    TotalPathCountWithDiagonals::SolutionDP diagSolutionDP;
     while(true){
         int m,n;
         cout << "m: ";
@@ -167,6 +210,9 @@ int main(int argc, const char * argv[]) {
         cin >> n;
         cout << "rec: " << solutionREC.pathCount(m, n) << endl;
         cout << " dp: " << solutionDP.pathCount(m, n) << endl << endl;
+        cout << "DIAG rec: " << diagSolutionREC.pathCount(m, n) << endl;
+        cout << " DIAG dp: " << diagSolutionDP.pathCount(m, n) << endl << endl;
+
     }
     
     return 0;
