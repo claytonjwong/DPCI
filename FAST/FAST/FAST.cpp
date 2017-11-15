@@ -16,7 +16,7 @@
 
 using namespace std;
 
-/* Fibonacci sequence */
+/* Fibonacci Sequence */
 class Solution1 {
 public:
     
@@ -48,6 +48,8 @@ public:
 
 /*
  
+ Coin Change
+ 
  Given an integer representing a given amount of change,
  write a function to compute the minumum number of coins
  required to make that amount of change.  You may assume
@@ -76,7 +78,7 @@ public:
     
     /*
      recursive solution w/ memo
-     O(mn) time, O(m) space, where m is the amount
+     O(m*n) time, O(m) space, where m is the amount
      and n is the size of the vector coins
      */
     int minCoinsMemo(int amount, vector<int>& coins){
@@ -101,7 +103,7 @@ public:
     
     /* 
      dp solution
-     O(mn) time, O(m) space, where m is the amount
+     O(m*n) time, O(m) space, where m is the amount
      and n is the size of the vector coins
      */
     int minCoinsDP(int amount, vector<int>& coins){
@@ -116,6 +118,56 @@ public:
     }
     
     
+};
+
+/*
+ 
+ Square Boolean Submatrix
+ 
+ Given a 2D boolean vector, find the largest square subarray of True values.
+ The return value should be the side length of the largest square submatrix
+ 
+ */
+class Solution3 {
+public:
+    /* recursive solution O(m*n*3^(n+m)) time and O(n*m) space */
+    int maxSubmatrix(vector<vector<bool>>& matrix){
+        if (matrix.empty() || matrix[0].empty()) return 0;
+        int maxi=0,m=(int)matrix.size(),n=(int)matrix[0].size();
+        for (int i=0; i<m; ++i)
+            for (int j=0; j<n; ++j)
+                maxi=max(maxi,helper(matrix,i,j,m,n));
+        return maxi;
+    }
+    int helper(vector<vector<bool>>& matrix, int i, int j, int m, int n){
+        if (i==m || j==n || !matrix[i][j]) return 0;
+        return 1+min({                  // +1 for current cell i,j==true
+            helper(matrix,i,j+1,m,n),   // right
+            helper(matrix,i+1,j,m,n),   // below
+            helper(matrix,i+1,j+1,m,n)  // below & right ( diagonal )
+        });
+    }
+    
+    /* DP solution O(m*n) time and space */
+    int maxSubmatrixDP(vector<vector<bool>>& matrix){
+        if (matrix.empty() || matrix[0].empty()) return 0;
+        int maxi=0,m=(int)matrix.size(),n=(int)matrix[0].size();
+        vector<vector<int>> dp(m,vector<int>(n,0));
+        for (int i=0; i<m; ++i) dp[i][n-1]=matrix[i][n-1] ? 1 : 0;    // right-most col
+        for (int j=0; j<n; ++j) dp[m-1][j]=matrix[m-1][j] ? 1 : 0;    // bottom row
+        for (int i=m-2; i>=0; --i){
+            for (int j=n-2; j>=0; --j){
+                dp[i][j]=matrix[i][j]
+                    ? 1+min({
+                            dp[i][j+1],     // right
+                            dp[i+1][j],     // below
+                            dp[i+1][j+1]})  // below & right ( diagonal )
+                    : 0;
+                maxi=max(maxi,dp[i][j]);
+            }
+        }
+        return maxi;
+    }
 };
 
 
@@ -133,6 +185,8 @@ int main(int argc, const char * argv[]) {
     }
      */
     
+    /* Coin Change */
+    /*
     Solution2 s2;
     vector<int> coins { 2,5,10,1 };
     while(true){
@@ -142,11 +196,20 @@ int main(int argc, const char * argv[]) {
         cout << s2.minCoins(amount,coins) << endl;
         cout << s2.minCoinsMemo(amount,coins) << endl;
         cout << s2.minCoinsDP(amount,coins) << endl;
-        
-        cout << "mc1= " << s2.mc1 << endl;
-        cout << "mc2= " << s2.mc2 << endl;
     }
+     */
     
+    /* Square Boolean Submatrix */
+    Solution3 s3;
+    const bool T=true;
+    const bool F=false;
+    vector<vector<bool>> matrix{
+        { T,F,T,F },
+        { T,T,F,F },
+        { T,T,T,F },
+    };
+    cout << s3.maxSubmatrix(matrix) << endl;
+    cout << s3.maxSubmatrixDP(matrix) << endl;
     
     return 0;
 }
