@@ -5,7 +5,7 @@
  1) First solution ( recursive top-down )
  2) Analyze the first solution
  3) Subproblem identification
- 4) Turn the solution around ( from top-down to bottom-up )
+ 4) Turn the solution around ( from recursive top-down to DP bottom-up )
  
  */
 
@@ -26,7 +26,7 @@ public:
         return Fib(n-2)+Fib(n-1);
     }
     
-    /* dp solution O(n) time and space */
+    /* DP solution O(n) time and space */
     int FibDP(int n){
         vector<int> dp(n+1);
         dp[0]=0;
@@ -36,7 +36,7 @@ public:
         return dp[n];
     }
     
-    /* dp solution O(n) time and O(1) space */
+    /* DP solution O(n) time and O(1) space */
     int FibDP2(int n){
         if (n<2) return n;
         int f2=0, f1=1, fn=1;
@@ -102,7 +102,7 @@ public:
     
     
     /* 
-     dp solution
+     DP solution
      O(m*n) time, O(m) space, where m is the amount
      and n is the size of the vector coins
      */
@@ -130,6 +130,7 @@ public:
  */
 class Solution3 {
 public:
+    
     /* recursive solution O(m*n*3^(n+m)) time and O(n*m) space */
     int maxSubmatrix(vector<vector<bool>>& matrix){
         if (matrix.empty() || matrix[0].empty()) return 0;
@@ -170,6 +171,66 @@ public:
     }
 };
 
+/*
+ 
+ Imagine that you have a knapsack which can carry a certain maximum amount of weight
+ and you have a set of items with their own weight and a monetary value.  You are going
+ to sell your items in the market but you can only carry what fits in the knapsack.
+ How do you maximize the amount of money that you can earn?
+ 
+ More formally: Given a list of items with values and weights, as well as a max weight,
+ find the maximum value you can generate from items, where the sum of the weights
+ is less than or equal to the max.
+ 
+ Example:
+ 
+ items = {(w:2, v:6), (w:2, v:10), (w:3, v:12)}
+ max weight = 5
+ knapsack(items, max weight)=22
+ 
+ */
+class Item {
+public:
+    int weight, value;
+    Item(int weight, int value) : weight{weight}, value{value} {}
+};
+
+class Solution4 {
+public:
+    
+    /* recursive solution O(2^n) time and O(n) space */
+    int knapsack(vector<Item>& items, int capacity){
+        int maxi=0;
+        for (int i=0; i<items.size(); ++i){
+            maxi=max(maxi,helper(items,i,capacity));
+        }
+        return maxi;
+    }
+    int helper(vector<Item>& items, int i, int capacity){
+        if (i==items.size()) return 0;
+        return items[i].weight<=capacity
+            ? max(items[i].value+helper(items,i+1,capacity-items[i].weight), // with
+                  helper(items,i+1,capacity))  // without
+            : helper(items,i+1,capacity);      // without
+    }
+    
+    /* DP solution O(n^2) time and space */
+    int knapsackDP(vector<Item>& items, int capacity){
+        int m=(int)items.size(),n=capacity;
+        vector<vector<int>> dp(m+1,vector<int>(n+1,0)); // dp[i] corresponds to item[i-1]
+        for (int i=0; i<=m; ++i) dp[i][0]=0; // items ( start with 0 == no item )
+        for (int j=0; j<=n; ++j) dp[0][j]=0; // weight capacity ( start with 0 == no weight )
+        for (int i=1; i<=m; ++i){
+            for (int j=1; j<=n; ++j){
+                dp[i][j]=(items[i-1].weight<=j)
+                    ? max(items[i-1].value+dp[i-1][j-items[i-1].weight], // with
+                          dp[i-1][j])   // without
+                    : dp[i-1][j];       // without
+            }
+        }
+        return dp[m][n];
+    }
+};
 
 int main(int argc, const char * argv[]) {
     
@@ -200,6 +261,7 @@ int main(int argc, const char * argv[]) {
      */
     
     /* Square Boolean Submatrix */
+    /*
     Solution3 s3;
     const bool T=true;
     const bool F=false;
@@ -210,6 +272,17 @@ int main(int argc, const char * argv[]) {
     };
     cout << s3.maxSubmatrix(matrix) << endl;
     cout << s3.maxSubmatrixDP(matrix) << endl;
+    */
+    
+    Solution4 s4;
+    vector<Item> items {
+        Item(2,6),
+        Item(2,10),
+        Item(3,12),
+        Item(1,7)
+    };
+    cout << s4.knapsack(items, 2) << endl;
+    cout << s4.knapsackDP(items, 2) << endl;
     
     return 0;
 }
